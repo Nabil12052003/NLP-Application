@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Détails du Dataset</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4e73df;
+      --secondary-color: #f8f9fc;
+      --accent-color: #2e59d9;
+      --success-color: #1cc88a;
+      --info-color: #36b9cc;
+      --warning-color: #f6c23e;
+      --danger-color: #e74a3b;
+      --dark-color: #5a5c69;
+      --light-gray: #f8f9fa;
+    }
+
+    body {
+      background-color: var(--secondary-color);
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .dataset-container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 15px;
+    }
+
+    .dataset-header {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+      margin-bottom: 30px;
+    }
+
+    .dataset-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .dataset-title {
+      color: var(--primary-color);
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .dataset-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .meta-item {
+      background: var(--light-gray);
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .meta-label {
+      font-weight: 600;
+      color: var(--dark-color);
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .meta-value {
+      font-size: 1.1rem;
+      color: var(--dark-color);
+    }
+
+    .classes-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
+    .class-badge {
+      background-color: rgba(78, 115, 223, 0.1);
+      color: var(--primary-color);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .table-responsive {
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .table th {
+      padding: 15px;
+      font-weight: 600;
+    }
+
+    .table td {
+      padding: 12px 15px;
+      vertical-align: middle;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .table tr:hover {
+      background-color: rgba(78, 115, 223, 0.03);
+    }
+
+    .progress {
+      height: 10px;
+      border-radius: 5px;
+      background-color: #e9ecef;
+    }
+
+    .progress-bar {
+      background-color: var(--primary-color);
+    }
+
+    .pagination .page-item.active .page-link {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .pagination .page-link {
+      color: var(--primary-color);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .btn-info {
+      background-color: var(--info-color);
+      border-color: var(--info-color);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--dark-color);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: #d1d3e2;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="dataset-container">
+  <div class="dataset-header">
+    <h2 class="dataset-title"><i class="fas fa-database me-2"></i><span th:text="|Détails de ${dataset.nomDataset}|"></span></h2>
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      <span th:text="${successMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-circle me-2"></i>
+      <span th:text="${errorMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  </div>
+
+  <div class="dataset-card">
+    <div class="dataset-meta">
+      <div class="meta-item">
+        <div class="meta-label">Taille</div>
+        <div class="meta-value" th:text="${dataset.taille} + ' couples'"></div>
+      </div>
+
+      <div class="meta-item">
+        <div class="meta-label">Avancement</div>
+        <div class="meta-value">
+          <div class="d-flex align-items-center">
+            <div class="progress flex-grow-1 me-3">
+              <div class="progress-bar" role="progressbar"
+                   th:style="'width: ' + ${dataset.avancement} + '%;'"
+                   th:attr="aria-valuenow=${dataset.avancement}"
+                   aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <span th:text="${#numbers.formatDecimal(dataset.avancement, 1, 2)} + '%'"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-item">
+        <div class="meta-label">Description</div>
+        <div class="meta-value" th:text="${dataset.description} ?: 'Aucune description'"></div>
+      </div>
+
+      <div class="meta-item">
+        <div class="meta-label">Classes</div>
+        <div class="meta-value">
+          <div th:if="${#lists.isEmpty(classes)}">Aucune classe définie</div>
+          <div class="classes-container" th:unless="${#lists.isEmpty(classes)}">
+            <span class="class-badge" th:each="classe : ${classes}" th:text="${classe.texteClass}"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="mb-4"><i class="fas fa-file-alt me-2"></i>Couples de Textes</h4>
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Texte 1</th>
+          <th>Texte 2</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="couple : ${couples}">
+          <td th:text="${couple.id}"></td>
+          <td class="text-truncate" style="max-width: 300px;" th:text="${couple.text1}"></td>
+          <td class="text-truncate" style="max-width: 300px;" th:text="${couple.text2}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(couples)}">
+          <td colspan="3" class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h5>Aucun couple de texte disponible</h5>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <nav aria-label="Page navigation" th:if="${totalPages > 1}">
+      <ul class="pagination justify-content-center mt-4">
+        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+          <a class="page-link" th:href="@{/admin/dataset-details/{id}(id=${dataset.id}, page=${currentPage - 1})}">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+        </li>
+        <li th:each="p : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${p == currentPage} ? 'active'">
+          <a class="page-link" th:href="@{/admin/dataset-details/{id}(id=${dataset.id}, page=${p})}" th:text="${p + 1}"></a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+          <a class="page-link" th:href="@{/admin/dataset-details/{id}(id=${dataset.id}, page=${currentPage + 1})}">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="action-buttons">
+      <a th:href="@{/admin/dataset-annotators/{id}(id=${dataset.id})}" class="btn btn-info">
+        <i class="fas fa-users me-2"></i>Annotateurs
+      </a>
+      <a th:href="@{/admin/dashboard}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Retour
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+</body>
+</html>

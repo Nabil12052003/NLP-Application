@@ -1,0 +1,521 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tableau de Bord Administrateur</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4e73df;
+      --secondary-color: #f8f9fc;
+      --accent-color: #2e59d9;
+      --success-color: #1cc88a;
+      --info-color: #36b9cc;
+      --warning-color: #f6c23e;
+      --danger-color: #e74a3b;
+      --dark-color: #5a5c69;
+      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      --box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+      --box-shadow-hover: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.25);
+    }
+
+    body {
+      background: linear-gradient(-45deg, #f8f9fc, #e3e6f0, #d1d3e2, #b7b9cc);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .admin-container {
+      max-width: 1400px;
+      margin: 20px auto;
+      padding: 0 15px;
+      animation: containerFadeIn 1s ease-out;
+    }
+
+    @keyframes containerFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: var(--box-shadow);
+      margin-bottom: 30px;
+      transition: var(--transition);
+      animation: slideInFromTop 0.8s ease-out;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes slideInFromTop {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-header:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--box-shadow-hover);
+    }
+
+    .dashboard-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      box-shadow: var(--box-shadow);
+      padding: 25px;
+      margin-bottom: 30px;
+      transition: var(--transition);
+      animation: slideInFromBottom 1s ease-out;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes slideInFromBottom {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--box-shadow-hover);
+    }
+
+    .action-buttons .btn {
+      margin-right: 8px;
+      margin-bottom: 8px;
+      min-width: 120px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .action-buttons .btn:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: var(--transition);
+      z-index: -1;
+    }
+
+    .action-buttons .btn:hover:before {
+      left: 100%;
+    }
+
+    .action-buttons .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .table-responsive {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      animation: tableSlideIn 1.2s ease-out;
+    }
+
+    @keyframes tableSlideIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .table-responsive:hover {
+      box-shadow: var(--box-shadow-hover);
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead {
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      color: white;
+    }
+
+    .table th {
+      padding: 18px 15px;
+      font-weight: 600;
+      border: none;
+      position: relative;
+    }
+
+    .table th:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: rgba(255,255,255,0.5);
+      transition: var(--transition);
+    }
+
+    .table th:hover:after {
+      width: 100%;
+    }
+
+    .table td {
+      padding: 15px;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      transition: var(--transition);
+    }
+
+    .table tbody tr {
+      transition: var(--transition);
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(78, 115, 223, 0.05);
+      transform: scale(1.01);
+    }
+
+    .progress {
+      height: 12px;
+      border-radius: 10px;
+      background-color: rgba(78, 115, 223, 0.1);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+      transition: width 1s ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background-image: linear-gradient(
+              -45deg,
+              rgba(255, 255, 255, .2) 25%,
+              transparent 25%,
+              transparent 50%,
+              rgba(255, 255, 255, .2) 50%,
+              rgba(255, 255, 255, .2) 75%,
+              transparent 75%,
+              transparent
+      );
+      background-size: 50px 50px;
+      animation: progressStripes 2s linear infinite;
+    }
+
+    @keyframes progressStripes {
+      0% { background-position: 0 0; }
+      100% { background-position: 50px 50px; }
+    }
+
+    .btn-sm {
+      padding: 8px 12px;
+      font-size: 0.875rem;
+      transition: var(--transition);
+      border-radius: 8px;
+    }
+
+    .btn-sm:hover {
+      transform: translateY(-2px) scale(1.05);
+    }
+
+    .btn-info {
+      background: linear-gradient(135deg, var(--info-color), #2a9fd6);
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      border: none;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--success-color), #17a673);
+      border: none;
+    }
+
+    .status-badge {
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: var(--transition);
+      animation: badgePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .badge-completed {
+      background: linear-gradient(135deg, rgba(28, 200, 138, 0.2), rgba(28, 200, 138, 0.1));
+      color: var(--success-color);
+      border: 1px solid rgba(28, 200, 138, 0.3);
+    }
+
+    .badge-in-progress {
+      background: linear-gradient(135deg, rgba(78, 115, 223, 0.2), rgba(78, 115, 223, 0.1));
+      color: var(--primary-color);
+      border: 1px solid rgba(78, 115, 223, 0.3);
+    }
+
+    .badge-pending {
+      background: linear-gradient(135deg, rgba(246, 194, 62, 0.2), rgba(246, 194, 62, 0.1));
+      color: #b68a00;
+      border: 1px solid rgba(246, 194, 62, 0.3);
+    }
+
+    .alert {
+      border-radius: 12px;
+      border: none;
+      animation: alertSlideIn 0.5s ease-out;
+      backdrop-filter: blur(10px);
+    }
+
+    @keyframes alertSlideIn {
+      from { opacity: 0; transform: translateX(-100%); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .alert-success {
+      background: linear-gradient(135deg, rgba(28, 200, 138, 0.15), rgba(28, 200, 138, 0.05));
+      color: var(--success-color);
+      border-left: 4px solid var(--success-color);
+    }
+
+    .alert-danger {
+      background: linear-gradient(135deg, rgba(231, 74, 59, 0.15), rgba(231, 74, 59, 0.05));
+      color: var(--danger-color);
+      border-left: 4px solid var(--danger-color);
+    }
+
+    .empty-state {
+      animation: emptyStateBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes emptyStateBounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      60% { transform: translateY(-5px); }
+    }
+
+    .floating-elements {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .floating-element {
+      position: absolute;
+      border-radius: 50%;
+      background: linear-gradient(45deg, rgba(78, 115, 223, 0.1), rgba(46, 89, 217, 0.1));
+      animation: float 20s infinite;
+    }
+
+    .floating-element:nth-child(1) {
+      width: 100px;
+      height: 100px;
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .floating-element:nth-child(2) {
+      width: 150px;
+      height: 150px;
+      top: 60%;
+      right: 10%;
+      animation-delay: 5s;
+    }
+
+    .floating-element:nth-child(3) {
+      width: 80px;
+      height: 80px;
+      bottom: 20%;
+      left: 20%;
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+      50% { transform: translateY(-30px) rotate(180deg); opacity: 0.6; }
+      100% { transform: translateY(0) rotate(360deg); opacity: 0.3; }
+    }
+
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+      .admin-container {
+        margin: 10px auto;
+        padding: 0 10px;
+      }
+
+      .dashboard-header,
+      .dashboard-card {
+        padding: 20px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .action-buttons .btn {
+        margin-right: 0;
+        width: 100%;
+      }
+
+      .table-responsive {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="floating-elements">
+  <div class="floating-element"></div>
+  <div class="floating-element"></div>
+  <div class="floating-element"></div>
+</div>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="admin-container">
+  <div class="dashboard-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+      <h2 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Tableau de Bord Administrateur</h2>
+      <div class="action-buttons d-flex flex-wrap">
+        <a th:href="@{/admin/UserGestion}" class="btn btn-primary">
+          <i class="fas fa-users me-1"></i> Gérer les Utilisateurs
+        </a>
+        <a th:href="@{/admin/CreeData}" class="btn btn-success">
+          <i class="fas fa-plus-circle me-1"></i> Créer un Dataset
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    <span th:text="${successMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <span th:text="${errorMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+      <h3 class="mb-0"><i class="fas fa-database me-2"></i>Liste des Datasets</h3>
+      <div class="text-muted">
+        <span th:text="${datasets.size()}"></span> dataset(s) au total
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>Taille</th>
+          <th>Avancement</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="dataset : ${datasets}">
+          <td th:text="${dataset.id}"></td>
+          <td>
+            <strong th:text="${dataset.nomDataset}"></strong>
+          </td>
+          <td th:text="${dataset.taille} + ' éléments'"></td>
+          <td>
+            <div class="d-flex align-items-center">
+              <div class="progress flex-grow-1 me-2">
+                <div class="progress-bar" role="progressbar"
+                     th:style="'width: ' + ${dataset.avancement} + '%;'"
+                     th:attr="aria-valuenow=${dataset.avancement}"
+                     aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <span th:text="${#numbers.formatDecimal(dataset.avancement, 1, 2)} + '%'"></span>
+            </div>
+          </td>
+          <td>
+            <span th:class="${dataset.avancement == 100} ? 'status-badge badge-completed' :
+                            (${dataset.avancement > 0} ? 'status-badge badge-in-progress' : 'status-badge badge-pending')"
+                  th:text="${dataset.avancement == 100} ? 'Complété' :
+                          (${dataset.avancement > 0} ? 'En cours' : 'En attente')">
+            </span>
+          </td>
+          <td>
+            <div class="d-flex flex-wrap gap-1">
+              <a th:href="@{/admin/Dataset/{id}(id=${dataset.id})}"
+                 class="btn btn-info btn-sm"
+                 title="Détails">
+                <i class="fas fa-eye"></i>
+              </a>
+              <a th:href="@{/admin/assign-annotators/{id}(id=${dataset.id})}"
+                 class="btn btn-primary btn-sm"
+                 title="Ajouter annotateur">
+                <i class="fas fa-user-plus"></i>
+              </a>
+              <a th:href="@{/admin/export-data/{id}(id=${dataset.id})}"
+                 class="btn btn-success btn-sm"
+                 title="Exporter">
+                <i class="fas fa-file-export"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div th:if="${datasets.size() == 0}" class="text-center py-5 empty-state">
+      <i class="fas fa-database fa-3x text-muted mb-3"></i>
+      <h4 class="text-muted">Aucun dataset disponible</h4>
+      <p class="text-muted">Commencez par créer un nouveau dataset</p>
+      <a th:href="@{/admin/CreeData}" class="btn btn-success">
+        <i class="fas fa-plus-circle me-1"></i> Créer un Dataset
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+

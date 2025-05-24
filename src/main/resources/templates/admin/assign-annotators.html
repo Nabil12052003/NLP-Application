@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sélection d'un Nouvel Annotateur</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --primary-light: rgba(78, 115, 223, 0.1);
+            --secondary-color: #f8f9fc;
+            --accent-color: #2e59d9;
+            --text-color: #5a5c69;
+            --text-light: #858796;
+            --border-color: #e3e6f0;
+            --success-color: #1cc88a;
+            --danger-color: #e74a3b;
+            --border-radius: 0.5rem;
+            --box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2.5rem;
+            margin: 3rem auto;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .dataset-name {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .alert {
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--danger-color);
+            background-color: rgba(231, 74, 59, 0.05);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .form-select-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+            height: auto;
+            transition: var(--transition);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%235a5c69' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-size: 16px 12px;
+            background-repeat: no-repeat;
+            appearance: none;
+            width: 100%;
+        }
+
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+            outline: none;
+        }
+
+        .select-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .btn {
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 6px rgba(78, 115, 223, 0.1);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(78, 115, 223, 0.15);
+        }
+
+        .btn-outline-secondary {
+            color: var(--text-color);
+            border-color: var(--border-color);
+            background-color: white;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--border-color);
+            transform: translateY(-2px);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+
+        option {
+            padding: 0.5rem 1rem;
+            transition: var(--transition);
+        }
+
+        option:hover {
+            background-color: var(--primary-color) !important;
+            color: white;
+        }
+
+        .info-card {
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .info-card p {
+            margin-bottom: 0;
+            color: var(--text-color);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+                margin: 1.5rem auto;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container mt-5">
+    <div class="header-section">
+        <h2>Sélection d'un nouvel annotateur</h2>
+        <div class="dataset-name" th:text="${dataset.nomDataset}"></div>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="info-card">
+        <p><i class="fas fa-info-circle me-2 text-primary"></i> La tâche associée à ce dataset n'est pas terminée. Veuillez sélectionner un nouvel annotateur parmi les options disponibles.</p>
+    </div>
+
+    <form th:action="@{/admin/assign-annotators/{datasetId}(datasetId=${dataset.id})}" method="post" class="needs-validation" novalidate>
+        <div class="mb-4">
+            <label class="form-label">
+                <i class="fas fa-users"></i>Sélectionner les annotateurs :
+            </label>
+            <div class="annotators-list">
+                <div th:each="annotator : ${annotateurs}" class="form-check">
+                    <input type="checkbox"
+                           name="annotateurIds"
+                           th:value="${annotator.id}"
+                           class="form-check-input"
+                           id="annotator-${annotator.id}">
+                    <label th:for="'annotator-' + ${annotator.id}"
+                           class="form-check-label">
+                        <i class="fas fa-user-circle"></i>
+                        <span th:text="${annotator.login} + ' (' + ${annotator.nom} + ' ' + ${annotator.prenom} + ')'"></span>
+                    </label>
+                </div>
+                <div th:if="${#lists.isEmpty(annotateurs)}" class="empty-state">
+                    <i class="fas fa-user-slash"></i>
+                    <div>Aucun annotateur disponible à affecter.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="dateLimite" class="form-label">
+                <i class="fas fa-calendar-alt"></i>Date Limite
+            </label>
+            <input type="date"
+                   id="dateLimite"
+                   name="dateLimite"
+                   class="form-control"
+                   required
+                   min="2023-01-01">
+            <div class="invalid-feedback">
+                <i class="fas fa-exclamation-triangle me-1"></i>Veuillez sélectionner une date limite valide.
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i>Affecter
+            </button>
+            <a th:href="@{/admin/dashboard}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>Retour au Dashboard
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

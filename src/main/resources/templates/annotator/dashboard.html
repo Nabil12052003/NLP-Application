@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de bord Annotateur</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --danger-color: #ef233c;
+            --warning-color: #f8961e;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            margin-bottom: 1.75rem;
+            font-weight: 600;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid rgba(67, 97, 238, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container mt-5">
+    <h2>
+        <i class="bi bi-speedometer2"></i>
+        <span>Tableau de bord Annotateur</span>
+    </h2>
+
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <i class="bi bi-check-circle-fill"></i>
+        <span th:text="${successMessage}"></span>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Example task list - replace with your actual data -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID Tâche</th>
+                <th>Dataset</th>
+                <th>Date Limite</th>
+                <th>Progression</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="tache : ${taches}">
+                <td th:text="${tache.id}"></td>
+                <td th:text="${tache.dataset.nomDataset}"></td>
+                <td>
+                    <span th:text="${#temporals.format(tache.dateLimite, 'dd/MM/yyyy')}"></span>
+                    <!-- Corrected date comparison -->
+                    <span th:if="${tache.dateLimite.isBefore(T(java.time.LocalDate).now())}"
+                          class="badge bg-danger ms-2">En retard</span>
+                </td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar"
+                             th:style="'width: ' + ${tache.avancement} + '%;'"
+                             th:text="${tache.avancement} + '%'"></div>
+                    </div>
+                </td>
+                <td>
+                    <a th:href="@{/annotator/annotate/{tacheId}(tacheId=${tache.id})}"
+                       class="btn btn-primary btn-sm">
+                        <i class="bi bi-pencil"></i> Annoter
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(taches)}">
+                <td colspan="5" class="text-center py-4">
+                    <i class="bi bi-inbox" style="font-size: 2rem; color: #adb5bd;"></i>
+                    <p class="mt-2 mb-0">Aucune tâche assignée</p>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
